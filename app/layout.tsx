@@ -10,6 +10,7 @@ import {
 } from '@clerk/nextjs'
 import NavBar from "@/components/layout/NavBar";
 import { ThemeProvider } from "@/components/theme-provider"
+import Container from "@/components/Container";
 
 
 
@@ -18,7 +19,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "StaySleek",
   description: "Book a hotel of your choice",
-  icons:'./icon.svg'
+  icons: './icon.svg'
 };
 
 export default function RootLayout({
@@ -37,7 +38,9 @@ export default function RootLayout({
             <main className="flex flex-col min-h-screen bg-secondary">
               <NavBar />
               <section className="flex-grow">
-                {children}
+                <Container>
+                  {children}
+                </Container>
               </section>
             </main>
           </ThemeProvider>
