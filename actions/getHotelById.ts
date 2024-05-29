@@ -14,7 +14,7 @@ export const getHotelById = async (hotelId: string) => {
 
         return hotel;
     }
-    catch (error: any) {
+    catch (error:any) {
         throw new Error(error);
     }
 }

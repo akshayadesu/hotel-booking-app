@@ -13,7 +13,7 @@ import { UploadButton } from "../uploadthing";
 import { useToast } from "../ui/use-toast";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Loader2, XCircle } from "lucide-react";
+import { Loader2, PencilLine, XCircle } from "lucide-react";
 import axios from 'axios';
 import useLocation from "@/hooks/useLocation";
 import { ICity, IState } from "country-state-city";
@@ -24,6 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useRouter } from "next/navigation";
 
 
 
@@ -78,12 +79,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     const [isLoading, setIsLoading] = useState(false)
 
     const { toast } = useToast()
+    const router = useRouter()
     const { getAllCountries, getCountryStates, getStateCities } = useLocation()
     const countries = getAllCountries()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        defaultValues: hotel || {
             title: '',
             description: '',
             image: '',
@@ -107,6 +109,16 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     })
 
     useEffect(() => {
+        if (typeof image === 'string') {
+            form.setValue('image', image, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+            })
+        }
+    }, [image])
+
+    useEffect(() => {
         const selectedCountry = form.watch('country')
         const countryStates = getCountryStates(selectedCountry)
         if (countryStates) {
@@ -125,7 +137,26 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        setIsLoading(true)
+        if (hotel) {
+            //update
+        } else {
+            axios.post('/api/hotel', values).then((res) => {
+                toast({
+                    variant: "success",
+                    description: 'Hotel created'
+                })
+                router.push(`/hotel/${res.data.id}`)
+                setIsLoading(false)
+            }).catch((err) => {
+                console.log(err);
+                toast({
+                    variant: "destructive",
+                    description: 'something went wrong'
+                })
+                setIsLoading(false)
+            })
+        }
     }
 
     const handleImageDelete = (image: string) => {
@@ -279,7 +310,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                                         </FormItem>
                                     )}
                                 />
-                                {/* <FormField control={form.control}
+                                <FormField control={form.control}
                                     name="freeWifi"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-row items-end space-x-3 rounded-md border p-4">
@@ -289,7 +320,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                                             <FormLabel>Free Wifi</FormLabel>
                                         </FormItem>
                                     )}
-                                /> */}
+                                /> 
                                 <FormField control={form.control}
                                     name="movieNights"
                                     render={({ field }) => (
@@ -463,9 +494,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                                 </FormItem>
                             )}
                         />
+                        <div className=" flex justify-between gap-2 flex-wrap">
+                            {hotel ? <Button className="max-w-[150px]" disabled={isLoading}>{isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Updating</> : <><PencilLine className="mr-2 h-4 w-4" />Update</>}</Button> :
+                                <Button className="max-w-[150px]" disabled={isLoading}>
+                                    {isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Creating</> : <><PencilLine className="mr-2 h-4 w-4" />Create Hotel</>}</Button>}
+                        </div>
                     </div>
                 </div>
-
             </form>
         </Form>
     </div>);
