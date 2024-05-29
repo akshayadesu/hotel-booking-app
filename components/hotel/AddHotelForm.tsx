@@ -13,7 +13,7 @@ import { UploadButton } from "../uploadthing";
 import { useToast } from "../ui/use-toast";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Loader2, PencilLine, XCircle } from "lucide-react";
+import { Eye, Loader2, PencilLine, Trash, XCircle } from "lucide-react";
 import axios from 'axios';
 import useLocation from "@/hooks/useLocation";
 import { ICity, IState } from "country-state-city";
@@ -63,7 +63,7 @@ const formSchema = z.object({
     shopping: z.boolean().optional(),
     freeParking: z.boolean().optional(),
     bikeRental: z.boolean().optional(),
-    freeWifi: z.boolean().optional(),
+    freewifi: z.boolean().optional(),
     movieNights: z.boolean().optional(),
     swimmingPool: z.boolean().optional(),
     coffeeShop: z.boolean().optional(),
@@ -77,6 +77,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     const [states, setStates] = useState<IState[]>([])
     const [cities, setCities] = useState<ICity[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isHotelDeleting, setIsHotelDeleting] = useState(false)
 
     const { toast } = useToast()
     const router = useRouter()
@@ -101,7 +102,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             shopping: false,
             freeParking: false,
             bikeRental: false,
-            freeWifi: false,
+            freewifi: false,
             movieNights: false,
             swimmingPool: false,
             coffeeShop: false,
@@ -139,7 +140,21 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
         if (hotel) {
-            //update
+            axios.patch(`/api/hotel/${hotel.id}`, values).then((res) => {
+                toast({
+                    variant: "success",
+                    description: 'Hotel updated!'
+                })
+                router.push(`/hotel/${res.data.id}`)
+                setIsLoading(false)
+            }).catch((err) => {
+                console.log(err);
+                toast({
+                    variant: "destructive",
+                    description: 'something went wrong'
+                })
+                setIsLoading(false)
+            })
         } else {
             axios.post('/api/hotel', values).then((res) => {
                 toast({
@@ -158,6 +173,33 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             })
         }
     }
+
+    const handleDeleteHotel = async (hotel: HotelWithRooms) => {
+        setIsHotelDeleting(true)
+        const getImageKey = (src: string) => src.substring(src.lastIndexOf('/') + 1)
+
+        try {
+            const imageKey = getImageKey(hotel.image)
+            await axios.post('/api/uploadthing/delete', { imageKey })
+            await axios.delete(`/api/hotel/${hotel.id}`)
+
+            setIsHotelDeleting(false)
+            toast({
+                variant: "success",
+                description: 'Hotel deleted!'
+            })
+            router.push('/hotel/new')
+        } catch (error: any) {
+            console.log(error)
+            setIsHotelDeleting(false)
+            toast({
+                variant: "destructive",
+                description: `Hotel deletion could not be completed! ${error.message}`
+            })
+        }
+
+    }
+
 
     const handleImageDelete = (image: string) => {
         setImageIsDeleting(true)
@@ -311,7 +353,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                                     )}
                                 />
                                 <FormField control={form.control}
-                                    name="freeWifi"
+                                    name="freewifi"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-row items-end space-x-3 rounded-md border p-4">
                                             <FormControl>
@@ -320,7 +362,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                                             <FormLabel>Free Wifi</FormLabel>
                                         </FormItem>
                                     )}
-                                /> 
+                                />
                                 <FormField control={form.control}
                                     name="movieNights"
                                     render={({ field }) => (
@@ -495,6 +537,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                             )}
                         />
                         <div className=" flex justify-between gap-2 flex-wrap">
+                            {hotel && <Button onClick={() => handleDeleteHotel(hotel)} variant='ghost' type="button" className="max-w-[150px]" disabled={isHotelDeleting || isLoading}>
+                                {isHotelDeleting ? <><Loader2 className="mr-2 h-4 w-4" />Deleting</> : <><Trash className="mr-2 h-4 w-4" />Delete</>}
+                            </Button>}
+
+                            {hotel && <Button onClick={() => router.push(`/hotel-details/${hotel.id}`)} variant="outline" type="button"><Eye className="mr-2 h-4 w-4" />View</Button>}
+
+
                             {hotel ? <Button className="max-w-[150px]" disabled={isLoading}>{isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Updating</> : <><PencilLine className="mr-2 h-4 w-4" />Update</>}</Button> :
                                 <Button className="max-w-[150px]" disabled={isLoading}>
                                     {isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Creating</> : <><PencilLine className="mr-2 h-4 w-4" />Create Hotel</>}</Button>}
