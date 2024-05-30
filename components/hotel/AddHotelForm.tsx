@@ -13,7 +13,7 @@ import { UploadButton } from "../uploadthing";
 import { useToast } from "../ui/use-toast";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Eye, Loader2, PencilLine, Plus, Terminal, Trash, XCircle } from "lucide-react";
+import { Eye, Loader2, Pencil, PencilLine, Plus, Terminal, Trash, XCircle } from "lucide-react";
 import axios from 'axios';
 import useLocation from "@/hooks/useLocation";
 import { ICity, IState } from "country-state-city";
@@ -593,7 +593,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
                             {hotel ? <Button className="max-w-[150px]" disabled={isLoading}>{isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Updating</> : <><PencilLine className="mr-2 h-4 w-4" />Update</>}</Button> :
                                 <Button className="max-w-[150px]" disabled={isLoading}>
-                                    {isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Creating</> : <><PencilLine className="mr-2 h-4 w-4" />Create Hotel</>}</Button>}
+                                {isLoading ? <><Loader2 className="mr-2 h-4 w-4" />Creating</> : <><Pencil className="mr-2 h-4 w-4" />Create Hotel</>}</Button>}
                         </div>
                     </div>
                 </div>
