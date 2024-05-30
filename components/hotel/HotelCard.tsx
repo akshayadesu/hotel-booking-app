@@ -5,9 +5,10 @@ import { HotelWithRooms } from "./AddHotelForm";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import AmenityItem from "../AmenityItem";
-import { Dumbbell, MapPin, Waves } from "lucide-react";
+import { Dumbbell, MapPin } from "lucide-react";
 import useLocation from "@/hooks/useLocation";
 import { Button } from "../ui/button";
+import { FaSwimmer } from "react-icons/fa";
 
 const HotelCard = ({ hotel }: { hotel: HotelWithRooms }) => {
 
@@ -18,7 +19,7 @@ const HotelCard = ({ hotel }: { hotel: HotelWithRooms }) => {
     const {getCountryByCode}=useLocation()
     const country= getCountryByCode(hotel.country)
 
-    return (<div onClick={() => !isMyHotels && router.push(`/hotel-Details/${hotel.id}`)} className={cn
+    return (<div onClick={() => !isMyHotels && router.push(`/hotel-details/${hotel.id}`)} className={cn
     ('cols-span-1 cursor-pointer transition hover:scale-105',isMyHotels && 'cursor-default')}>
         <div className="flex gap-2 bg-background/50 border border-primary/10 rounded-lg">
             <div className="flex-1 aspect-square overflow-hidden relative w-full h-[210px] rounded-s-lg">
@@ -37,7 +38,7 @@ const HotelCard = ({ hotel }: { hotel: HotelWithRooms }) => {
                             <MapPin className="w-4 h-4" />{country?.name},{hotel.city}
                     </AmenityItem>
                     {hotel.swimmingPool && <AmenityItem>
-                        <Waves className="w-4 h-4" />Pool
+                        <FaSwimmer size={18}/>Pool
                     </AmenityItem>
                     }
                     {hotel.gym && <AmenityItem><Dumbbell className="w-4 h-4" />Gym</AmenityItem>}
