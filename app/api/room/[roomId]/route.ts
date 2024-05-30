@@ -12,7 +12,6 @@ export async function PATCH(
             return new NextResponse('Room Id is required', { status: 400 })
         }
 
-
         if (!userId) {
             return new NextResponse('Unauthorized', { status: 401 })
         }

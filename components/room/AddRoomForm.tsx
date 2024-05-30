@@ -193,7 +193,7 @@ const AddRoomForm = ({ hotel, room, handleDialogueOpen }: AddRoomFormProps) => {
                             <FormItem>
                                 <FormLabel>Room Description *</FormLabel>
                                 <FormDescription>
-                                    Is there anything special about this rrom
+                                    Is there anything special about this room
                                 </FormDescription>
                                 <FormControl>
                                     <Textarea placeholder="Have a beautiful view of the ocean while in this room" {...field} />
