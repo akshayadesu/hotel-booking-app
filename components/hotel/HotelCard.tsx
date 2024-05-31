@@ -50,7 +50,7 @@ const HotelCard = ({ hotel }: { hotel: HotelWithRooms }) => {
                         <div className="text-xs">/24hrs</div>
                         </>}
                     </div>
-                    {isMyHotels&& <Button onClick={()=>router.push(`/hotel${hotel.id}`)} variant="outline">Edit</Button>}
+                    {isMyHotels&& <Button onClick={()=>router.push(`/hotel/${hotel.id}`)} variant="outline">Edit</Button>}
                 </div>
             </div>
         </div>
